@@ -1,0 +1,96 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                 String    @id @default(cuid())
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  email              String    @unique
+  password           String
+  resetPasswordToken String    @default("")
+  blocked            Boolean   @default(false)
+  role               String    @default("customer")
+  customer           Customer?
+  workers            Worker[]
+}
+
+model Customer {
+  id            String   @id @default(cuid())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  companyName   String
+  streetAddress String
+  city          String
+  state         String
+  postalCode    String
+  phone         String
+  orders        Order[]
+  user          User     @relation(fields: [userId], references: [id])
+  userId        String   @unique
+}
+
+model Order {
+  id          String       @id @default(cuid())
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  date        DateTime
+  status      Boolean      @default(false)
+  containers  Container[]
+  workers     Worker[]
+  customer    Customer     @relation(fields: [customerId], references: [id])
+  customerId  String
+  attachments Attachment[]
+}
+
+model Worker {
+  id         String   @id @default(cuid())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  assignedBy String?
+  order      Order    @relation(fields: [orderId], references: [id])
+  orderId    String
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String
+}
+
+model Container {
+  id               String   @id @default(cuid())
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  type             String   @default("20ft")
+  contain          String
+  productQuantity  Int
+  productWeight    Int
+  forkliftOperator Boolean  @default(false)
+  stretchWrap      Boolean  @default(false)
+  additionalInfo   String?
+  order            Order    @relation(fields: [orderId], references: [id])
+  orderId          String
+}
+
+model Attachment {
+  id           String   @id @default(cuid())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  uploadBy     String
+  fieldname    String
+  originalname String
+  encoding     String
+  mimetype     String
+  size         Int
+  destination  String
+  filename     String
+  path         String
+  isDelete     Boolean  @default(false)
+  order        Order    @relation(fields: [orderId], references: [id])
+  orderId      String
+}
