@@ -8,6 +8,27 @@ import { Prisma } from '@prisma/client';
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
+  async getMeta(params: {
+    skip?: number;
+    take?: number;
+    where?: Prisma.UserWhereInput;
+  }) {
+    const { skip, take, where } = params;
+    const count = await this.prisma.user.count({
+      where: where
+        ? where
+        : {
+            blocked: false,
+          },
+    });
+    return {
+      page: skip / take + 1,
+      pages: Math.ceil(count / take),
+      itemsPerPage: take,
+      totalItems: count,
+    };
+  }
+
   async create(createUserDto: CreateUserDto) {
     if (await this.findOneByEmail(createUserDto.email)) {
       throw new BadRequestException('Email is already registered');
@@ -33,25 +54,30 @@ export class UsersService {
     orderBy?: Prisma.UserOrderByWithRelationInput;
   }) {
     const { skip, take, cursor, where, orderBy } = params;
-    const users = await this.prisma.user.findMany({
-      select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-        email: true,
-        role: true,
-      },
-      skip,
-      take,
-      cursor,
-      where: where
-        ? where
-        : {
-            blocked: false,
-          },
-      orderBy,
-    });
-    return users;
+    const findAllUsers = async () =>
+      await this.prisma.user.findMany({
+        select: {
+          id: true,
+          createdAt: true,
+          updatedAt: true,
+          email: true,
+          role: true,
+        },
+        skip,
+        take,
+        cursor,
+        where: where
+          ? where
+          : {
+              blocked: false,
+            },
+        orderBy,
+      });
+    const [results, meta] = await Promise.all([
+      findAllUsers(),
+      this.getMeta({ where, skip, take }),
+    ]);
+    return { results, meta };
   }
 
   async findOne(id: string) {
