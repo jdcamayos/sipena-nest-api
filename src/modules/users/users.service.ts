@@ -73,11 +73,11 @@ export class UsersService {
             },
         orderBy,
       });
-    const [results, meta] = await Promise.all([
+    const [data, meta] = await Promise.all([
       findAllUsers(),
       this.getMeta({ where, skip, take }),
     ]);
-    return { results, meta };
+    return { data, meta };
   }
 
   async findOne(id: string) {
