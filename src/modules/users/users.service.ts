@@ -1,12 +1,34 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  // ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 import { PrismaService } from 'src/libs/prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Prisma } from '@prisma/client';
+// import { Roles } from '../auth/role.enum';
 
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
+
+  // async verifyRole(id: string, roles: Roles[]) {
+  //   const user = await this.prisma.user.findUnique({
+  //     where: {
+  //       id,
+  //     },
+  //     select: {
+  //       role: true,
+  //     },
+  //   });
+  //   console.log(user.role);
+  //   console.log(roles);
+  //   // return roles.some(role => user.includes)
+  //   // if (user.role === role) return true;
+  //   return true;
+  //   throw new ForbiddenException(`Role ${user.role} not allowed`);
+  // }
 
   async getMeta(params: {
     skip?: number;
@@ -96,7 +118,7 @@ export class UsersService {
     return user;
   }
 
-  async findOneByEmail(email: string) {
+  async findOneByEmail(email: string, complete?: boolean) {
     const user = await this.prisma.user.findUnique({
       where: {
         email,
@@ -107,6 +129,11 @@ export class UsersService {
         updatedAt: true,
         email: true,
         role: true,
+        ...(complete && {
+          password: true,
+          resetPasswordToken: true,
+          blocked: true,
+        }),
       },
     });
     return user;
@@ -118,6 +145,41 @@ export class UsersService {
         id,
       },
       data: updateUserDto,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        email: true,
+        role: true,
+      },
+    });
+    return user;
+  }
+
+  async assignRecoveryToken(id: string, resetPasswordToken: string) {
+    const user = await this.prisma.user.update({
+      where: {
+        id,
+      },
+      data: {
+        resetPasswordToken,
+      },
+      select: {
+        id: true,
+        resetPasswordToken: true,
+      },
+    });
+    return user;
+  }
+
+  async updatePassword(id: string, password: string) {
+    const user = await this.prisma.user.update({
+      where: {
+        id,
+      },
+      data: {
+        password,
+      },
       select: {
         id: true,
         createdAt: true,
