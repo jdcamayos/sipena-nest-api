@@ -1,34 +1,12 @@
-import {
-  BadRequestException,
-  // ForbiddenException,
-  Injectable,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/libs/prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Prisma } from '@prisma/client';
-// import { Roles } from '../auth/role.enum';
 
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
-
-  // async verifyRole(id: string, roles: Roles[]) {
-  //   const user = await this.prisma.user.findUnique({
-  //     where: {
-  //       id,
-  //     },
-  //     select: {
-  //       role: true,
-  //     },
-  //   });
-  //   console.log(user.role);
-  //   console.log(roles);
-  //   // return roles.some(role => user.includes)
-  //   // if (user.role === role) return true;
-  //   return true;
-  //   throw new ForbiddenException(`Role ${user.role} not allowed`);
-  // }
 
   async getMeta(params: {
     skip?: number;
@@ -178,6 +156,7 @@ export class UsersService {
         id,
       },
       data: {
+        resetPasswordToken: '',
         password,
       },
       select: {
