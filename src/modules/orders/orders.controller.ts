@@ -25,15 +25,18 @@ import { WorkersService } from '../workers/workers.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { storage } from 'src/libs/multer';
 import { AttachmentsService } from '../attachments/attachments.service';
+import { CommentsService } from '../comments/comments.service';
+import { CreateCommentDto } from './dto/create-comment.dto';
 
 @ApiTags('orders')
 @UseGuards(JwtAuthGuard, RoleGuard)
 @Controller('orders')
 export class OrdersController {
   constructor(
+    private readonly attachmentsService: AttachmentsService,
+    private readonly commentsService: CommentsService,
     private readonly ordersService: OrdersService,
     private readonly workersService: WorkersService,
-    private readonly attachmentsService: AttachmentsService,
   ) {}
 
   @Role(Roles.Customer)
@@ -124,6 +127,20 @@ export class OrdersController {
       uploadBy: req.user.id,
       ...restFile,
       orderId,
+    });
+  }
+
+  @Role(Roles.Admin, Roles.Customer, Roles.Worker)
+  @Post(':orderId/comments')
+  addCommentToOrder(
+    @Param('orderId') orderId: string,
+    @Body() createCommentDto: CreateCommentDto,
+    @Req() req: RequestType,
+  ) {
+    return this.commentsService.create({
+      orderId,
+      userId: req.user.id,
+      ...createCommentDto,
     });
   }
 

@@ -7,10 +7,6 @@ import { UsersModule } from './modules/users/users.module';
 import { ConfigModule } from '@nestjs/config';
 import { OrdersModule } from './modules/orders/orders.module';
 import { AuthModule } from './modules/auth/auth.module';
-import { ContainersModule } from './modules/containers/containers.module';
-import { WorkersModule } from './modules/workers/workers.module';
-import { AttachmentsModule } from './modules/attachments/attachments.module';
-// import { CommentsModule } from './modules/comments/comments.module';
 import { UploadsModule } from './modules/uploads/uploads.module';
 import config from './config';
 
@@ -26,10 +22,6 @@ import config from './config';
     UsersModule,
     PrismaModule,
     CustomersModule,
-    ContainersModule,
-    WorkersModule,
-    AttachmentsModule,
-    // CommentsModule,
     OrdersModule,
     UploadsModule,
   ],

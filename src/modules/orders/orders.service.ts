@@ -80,6 +80,7 @@ export class OrdersService {
           _count: {
             select: {
               attachments: true,
+              comments: true,
               containers: true,
               workers: true,
             },
@@ -100,6 +101,7 @@ export class OrdersService {
       },
       include: {
         attachments: true,
+        comments: true,
         containers: true,
         workers: {
           select: {

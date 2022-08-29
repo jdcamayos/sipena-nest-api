@@ -4,9 +4,8 @@ import { OrdersController } from './orders.controller';
 import { PrismaModule } from 'src/libs/prisma/prisma.module';
 import { ConfigModule } from '@nestjs/config';
 import { WorkersModule } from '../workers/workers.module';
-// import { ContainersModule } from '../containers/containers.module';
 import { AttachmentsModule } from '../attachments/attachments.module';
-// import { CommentsModule } from '../comments/comments.module';
+import { CommentsModule } from '../comments/comments.module';
 import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
@@ -17,9 +16,8 @@ import { MulterModule } from '@nestjs/platform-express';
     PrismaModule,
     ConfigModule,
     WorkersModule,
-    // ContainersModule,
     AttachmentsModule,
-    // CommentsModule,
+    CommentsModule,
   ],
   controllers: [OrdersController],
   providers: [OrdersService],
