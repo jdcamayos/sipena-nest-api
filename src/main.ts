@@ -25,12 +25,18 @@ async function bootstrap() {
     .setTitle('Sipena Orders API')
     .setDescription('')
     .setVersion('1.0')
+    .addTag('auth')
+    .addTag('customers')
+    .addTag('orders')
+    .addTag('ping')
+    .addTag('uploads')
     .addTag('users')
     .build();
   const document = SwaggerModule.createDocument(app, docBuilder);
   SwaggerModule.setup('docs', app, document);
   // Configuration
   const config = app.get(ConfigService);
+  app.enableCors();
   // Start
   await app.listen(config.get<number>('PORT') || 4000);
 }
