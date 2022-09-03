@@ -10,6 +10,7 @@ import {
   Req,
   UseInterceptors,
   UploadedFile,
+  Patch,
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
@@ -27,6 +28,7 @@ import { storage } from 'src/libs/multer';
 import { AttachmentsService } from '../attachments/attachments.service';
 import { CommentsService } from '../comments/comments.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
+import { UpdateOrderDto } from './dto/update-order.dto';
 
 @ApiTags('orders')
 @UseGuards(JwtAuthGuard, RoleGuard)
@@ -150,14 +152,14 @@ export class OrdersController {
     return this.ordersService.findOne(orderId);
   }
 
-  // @Role(Roles.Admin)
-  // @Patch(':orderId')
-  // update(
-  //   @Param('orderId') orderId: string,
-  //   @Body() updateOrderDto: UpdateOrderDto,
-  // ) {
-  //   return this.ordersService.update(orderId, updateOrderDto);
-  // }
+  @Role(Roles.Admin, Roles.Worker)
+  @Patch(':orderId')
+  update(
+    @Param('orderId') orderId: string,
+    @Body() updateOrderDto: UpdateOrderDto,
+  ) {
+    return this.ordersService.update(orderId, updateOrderDto);
+  }
 
   @Role(Roles.Admin)
   @Delete(':orderId')
