@@ -8,9 +8,11 @@ import {
   Delete,
   Query,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Role } from '../auth/decorators/role.decorator';
+import { RequestType } from '../auth/entities/request.entity';
 import { Roles } from '../auth/entities/role.entity';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RoleGuard } from '../auth/guards/role.guard';
@@ -41,7 +43,13 @@ export class CustomersController {
     });
   }
 
-  @Role(Roles.Customer, Roles.Admin)
+  @Role(Roles.Customer)
+  @Get('/me')
+  findMe(@Req() req: RequestType) {
+    return this.customersService.findByUserId(req.user.id);
+  }
+
+  @Role(Roles.Customer)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.customersService.findOne(id);

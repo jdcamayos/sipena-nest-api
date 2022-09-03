@@ -55,6 +55,23 @@ export class CustomersService {
     return { data, meta };
   }
 
+  async findByUserId(id: string) {
+    const customer = await this.prisma.customer.findUnique({
+      where: {
+        userId: id,
+      },
+      // include: {
+      //   user: {
+      //     select: {
+      //       id: true,
+      //       email: true,
+      //     },
+      //   },
+      // },
+    });
+    return customer;
+  }
+
   async findOne(id: string) {
     const customer = await this.prisma.customer.findUnique({
       where: {
