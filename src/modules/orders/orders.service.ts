@@ -66,7 +66,11 @@ export class OrdersService {
         skip,
         take,
         where,
-        orderBy,
+        orderBy: orderBy
+          ? orderBy
+          : {
+              createdAt: 'desc',
+            },
         include: {
           customer: {
             select: {
