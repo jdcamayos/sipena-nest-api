@@ -1,22 +1,21 @@
 import {
   Controller,
   Get,
-  // Body,
-  // Patch,
+  Body,
   Param,
   Delete,
   Query,
   UseGuards,
+  Patch,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-// import { CreateUserDto } from './dto/create-user.dto';
-// import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { QueryParamsDto } from './dto/query-params.dto';
 import { Role } from '../auth/decorators/role.decorator';
 import { Roles } from '../auth/entities/role.entity';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RoleGuard } from '../auth/guards/role.guard';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @ApiTags('users')
 @UseGuards(JwtAuthGuard, RoleGuard)
@@ -53,6 +52,25 @@ export class UsersController {
   }
 
   @Role(Roles.Admin)
+  @Get('workers/:content')
+  findAllWorkersWithContent(
+    @Query() queryParams: QueryParamsDto,
+    @Param('content') content: string,
+  ) {
+    const { limit, offset } = queryParams;
+    return this.usersService.findAll({
+      where: {
+        role: 'worker',
+        email: {
+          contains: content,
+        },
+      },
+      take: limit ? limit : 10,
+      skip: offset ? offset : 0,
+    });
+  }
+
+  @Role(Roles.Admin)
   @Get('customers')
   findAllCustomers(@Query() queryParams: QueryParamsDto) {
     const { limit, offset } = queryParams;
@@ -70,10 +88,11 @@ export class UsersController {
   //   return this.usersService.findOne(id);
   // }
 
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-  //   return this.usersService.update(id, updateUserDto);
-  // }
+  @Role(Roles.Admin)
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.update(id, updateUserDto);
+  }
 
   @Role(Roles.Admin)
   @Delete(':id')

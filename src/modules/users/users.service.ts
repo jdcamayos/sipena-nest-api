@@ -15,11 +15,7 @@ export class UsersService {
   }) {
     const { skip, take, where } = params;
     const count = await this.prisma.user.count({
-      where: where
-        ? where
-        : {
-            blocked: false,
-          },
+      where,
     });
     return {
       page: skip / take + 1,
@@ -54,6 +50,17 @@ export class UsersService {
     orderBy?: Prisma.UserOrderByWithRelationInput;
   }) {
     const { skip, take, cursor, where, orderBy } = params;
+    const defaultWhere = where
+      ? where
+      : {
+          blocked: false,
+        };
+    const defaultOrder: Prisma.UserOrderByWithRelationInput = orderBy
+      ? orderBy
+      : {
+          email: 'asc',
+        };
+
     const findAllUsers = async () =>
       await this.prisma.user.findMany({
         select: {
@@ -62,20 +69,17 @@ export class UsersService {
           updatedAt: true,
           email: true,
           role: true,
+          blocked: true,
         },
         skip,
         take,
         cursor,
-        where: where
-          ? where
-          : {
-              blocked: false,
-            },
-        orderBy,
+        where: defaultWhere,
+        orderBy: defaultOrder,
       });
     const [data, meta] = await Promise.all([
       findAllUsers(),
-      this.getMeta({ where, skip, take }),
+      this.getMeta({ where: defaultWhere, skip, take }),
     ]);
     return { data, meta };
   }
@@ -129,6 +133,7 @@ export class UsersService {
         updatedAt: true,
         email: true,
         role: true,
+        blocked: true,
       },
     });
     return user;
