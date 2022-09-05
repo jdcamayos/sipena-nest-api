@@ -3,6 +3,7 @@ import { PrismaService } from 'src/libs/prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Prisma } from '@prisma/client';
+import { UpdateMyPasswordDto } from './dto/update-my-password.dto';
 
 @Injectable()
 export class UsersService {
@@ -134,6 +135,23 @@ export class UsersService {
         email: true,
         role: true,
         blocked: true,
+      },
+    });
+    return user;
+  }
+
+  async updateMyPassword(id: string, updateMyPasswordDto: UpdateMyPasswordDto) {
+    const user = await this.prisma.user.update({
+      where: {
+        id,
+      },
+      data: updateMyPasswordDto,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        email: true,
+        role: true,
       },
     });
     return user;

@@ -7,6 +7,8 @@ import {
   Query,
   UseGuards,
   Patch,
+  Req,
+  Post,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { ApiTags } from '@nestjs/swagger';
@@ -16,6 +18,8 @@ import { Roles } from '../auth/entities/role.entity';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RoleGuard } from '../auth/guards/role.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { RequestType } from '../auth/entities/request.entity';
+import { UpdateMyPasswordDto } from './dto/update-my-password.dto';
 
 @ApiTags('users')
 @UseGuards(JwtAuthGuard, RoleGuard)
@@ -87,6 +91,14 @@ export class UsersController {
   // findOne(@Param('id') id: string) {
   //   return this.usersService.findOne(id);
   // }
+  @Role(Roles.Admin, Roles.Customer, Roles.Worker)
+  @Post('password')
+  updateMyPassword(
+    @Req() req: RequestType,
+    @Body() updateMyPasswordDto: UpdateMyPasswordDto,
+  ) {
+    return this.usersService.updateMyPassword(req.user.id, updateMyPasswordDto);
+  }
 
   @Role(Roles.Admin)
   @Patch(':id')
