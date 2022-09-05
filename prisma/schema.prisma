@@ -20,6 +20,7 @@ model User {
   resetPasswordToken String    @default("")
   blocked            Boolean   @default(false)
   role               String    @default("customer")
+  image              String?   @default("")
   customer           Customer?
   workers            Worker[]
   comments           Comment[]

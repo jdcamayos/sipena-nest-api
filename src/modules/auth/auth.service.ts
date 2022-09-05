@@ -10,10 +10,12 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from './entities/user.entity';
 import { ConfigService } from '@nestjs/config';
 import { RecoveryPasswordDto } from './dto/recovery-password.dto';
+import { MailService } from 'src/libs/mail/mail.service';
 
 @Injectable()
 export class AuthService {
   constructor(
+    private mailService: MailService,
     private configService: ConfigService,
     private userService: UsersService,
     private jwtService: JwtService,
@@ -57,7 +59,9 @@ export class AuthService {
   }
 
   async register(registerAuthDto: RegisterAuthDto) {
-    return await this.userService.create(registerAuthDto);
+    const user = await this.userService.create(registerAuthDto);
+    await this.mailService.registerMail(user.email);
+    return user;
   }
 
   generateToken(user: User) {
@@ -82,6 +86,8 @@ export class AuthService {
       token,
     );
     // Send Email
+    const reoveryLink = `http://localhost:3000/change-password/${resetPasswordToken}`;
+    await this.mailService.forgotPasswordMail(email, reoveryLink);
 
     if (resetPasswordToken) return true;
     return false;

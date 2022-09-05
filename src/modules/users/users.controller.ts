@@ -9,6 +9,8 @@ import {
   Patch,
   Req,
   Post,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { ApiTags } from '@nestjs/swagger';
@@ -20,6 +22,8 @@ import { RoleGuard } from '../auth/guards/role.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { RequestType } from '../auth/entities/request.entity';
 import { UpdateMyPasswordDto } from './dto/update-my-password.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { userStorage } from 'src/libs/multer';
 
 @ApiTags('users')
 @UseGuards(JwtAuthGuard, RoleGuard)
@@ -87,10 +91,21 @@ export class UsersController {
     });
   }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.usersService.findOne(id);
-  // }
+  @Role(Roles.Admin, Roles.Customer, Roles.Worker)
+  @Post('image/:userId')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: userStorage,
+    }),
+  )
+  addImageToUser(
+    @Param('userId') userId: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    console.log(file);
+    return this.usersService.addImageToUser(userId, file);
+  }
+
   @Role(Roles.Admin, Roles.Customer, Roles.Worker)
   @Post('password')
   updateMyPassword(

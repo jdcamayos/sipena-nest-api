@@ -4,6 +4,10 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Prisma } from '@prisma/client';
 import { UpdateMyPasswordDto } from './dto/update-my-password.dto';
+import * as sharp from 'sharp';
+import * as path from 'path';
+import { v4 as uuid } from 'uuid';
+import * as fs from 'fs';
 
 @Injectable()
 export class UsersService {
@@ -38,6 +42,7 @@ export class UsersService {
         updatedAt: true,
         email: true,
         role: true,
+        image: true,
       },
     });
     return user;
@@ -96,6 +101,7 @@ export class UsersService {
         updatedAt: true,
         email: true,
         role: true,
+        image: true,
       },
     });
     return user;
@@ -152,6 +158,7 @@ export class UsersService {
         updatedAt: true,
         email: true,
         role: true,
+        image: true,
       },
     });
     return user;
@@ -173,6 +180,33 @@ export class UsersService {
     return user;
   }
 
+  async addImageToUser(userId: string, file: Express.Multer.File) {
+    const imageBuffer = await fs.promises.readFile(file.path);
+    const newName = uuid() + path.extname(file.originalname);
+    const imagePath = path.join('public', userId, newName);
+    const imageResized = await sharp(imageBuffer)
+      .resize({ width: 300 })
+      .toBuffer();
+    await fs.promises.writeFile(imagePath, imageResized);
+    const user = await this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        image: imagePath,
+      },
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        email: true,
+        role: true,
+        image: true,
+      },
+    });
+    return user;
+  }
+
   async updatePassword(id: string, password: string) {
     const user = await this.prisma.user.update({
       where: {
@@ -188,6 +222,7 @@ export class UsersService {
         updatedAt: true,
         email: true,
         role: true,
+        image: true,
       },
     });
     return user;
@@ -207,6 +242,7 @@ export class UsersService {
         updatedAt: true,
         email: true,
         role: true,
+        image: true,
       },
     });
     return user;

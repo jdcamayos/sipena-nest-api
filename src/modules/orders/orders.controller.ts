@@ -24,7 +24,7 @@ import { RequestType } from '../auth/entities/request.entity';
 import { AssignWorkerToOrderDto } from './dto/assign-worker-to-order.dto';
 import { WorkersService } from '../workers/workers.service';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { storage } from 'src/libs/multer';
+import { orderStorage } from 'src/libs/multer';
 import { AttachmentsService } from '../attachments/attachments.service';
 import { CommentsService } from '../comments/comments.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
@@ -115,7 +115,7 @@ export class OrdersController {
   @Post(':orderId/attachments')
   @UseInterceptors(
     FileInterceptor('file', {
-      storage,
+      storage: orderStorage,
     }),
   )
   addFilesToOrder(
@@ -143,6 +143,14 @@ export class OrdersController {
       orderId,
       userId: req.user.id,
       ...createCommentDto,
+    });
+  }
+
+  @Role(Roles.Admin, Roles.Worker)
+  @Get(':orderId/finish')
+  finishOrder(@Param('orderId') orderId: string, @Req() req: RequestType) {
+    return this.ordersService.update(orderId, {
+      status: true,
     });
   }
 

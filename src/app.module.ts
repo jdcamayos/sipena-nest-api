@@ -8,6 +8,9 @@ import { ConfigModule } from '@nestjs/config';
 import { OrdersModule } from './modules/orders/orders.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UploadsModule } from './modules/uploads/uploads.module';
+import { MailService } from './libs/mail/mail.service';
+import { MailModule } from './libs/mail/mail.module';
+import { PublicModule } from './modules/public/public.module';
 import config from './config';
 
 @Module({
@@ -18,14 +21,16 @@ import config from './config';
       isGlobal: true,
       expandVariables: true,
     }),
+    MailModule,
     AuthModule,
     UsersModule,
     PrismaModule,
     CustomersModule,
     OrdersModule,
     UploadsModule,
+    PublicModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, MailService],
 })
 export class AppModule {}
