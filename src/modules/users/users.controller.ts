@@ -102,7 +102,6 @@ export class UsersController {
     @Param('userId') userId: string,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    console.log(file);
     return this.usersService.addImageToUser(userId, file);
   }
 
