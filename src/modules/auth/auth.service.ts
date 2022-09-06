@@ -61,7 +61,7 @@ export class AuthService {
   async register(registerAuthDto: RegisterAuthDto) {
     const user = await this.userService.create(registerAuthDto);
     await this.mailService.registerMail(user.email);
-    return user;
+    return this.generateToken(user as User);
   }
 
   generateToken(user: User) {

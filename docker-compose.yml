@@ -4,12 +4,14 @@ services:
   database:
     image: postgres:latest
     container_name: sipena-database
+    networks:
+      - sipena_net
     environment:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASS}
       - POSTGRES_DB=${DB_NAME}
     ports:
-      - '5432:5432'
+      - '5535:5432'
     volumes:
       - sipena_db_volume:/var/lib/postgresql/data
 
