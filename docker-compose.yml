@@ -4,8 +4,7 @@ services:
   database:
     image: postgres:latest
     container_name: sipena-database
-    networks:
-      - sipena_net
+    restart: always
     environment:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASS}

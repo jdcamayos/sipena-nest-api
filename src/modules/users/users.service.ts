@@ -56,11 +56,11 @@ export class UsersService {
     orderBy?: Prisma.UserOrderByWithRelationInput;
   }) {
     const { skip, take, cursor, where, orderBy } = params;
-    const defaultWhere = where
-      ? where
-      : {
-          blocked: false,
-        };
+    // const defaultWhere = where
+    //   ? where
+    //   : {
+    //       blocked: false,
+    //     };
     const defaultOrder: Prisma.UserOrderByWithRelationInput = orderBy
       ? orderBy
       : {
@@ -80,12 +80,12 @@ export class UsersService {
         skip,
         take,
         cursor,
-        where: defaultWhere,
+        where,
         orderBy: defaultOrder,
       });
     const [data, meta] = await Promise.all([
       findAllUsers(),
-      this.getMeta({ where: defaultWhere, skip, take }),
+      this.getMeta({ where, skip, take }),
     ]);
     return { data, meta };
   }

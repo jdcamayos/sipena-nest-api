@@ -165,6 +165,7 @@ web_modules/
 .env.development.local
 .env.test.local
 .env.production.local
+.env.production
 .env.local
 
 # parcel-bundler cache (https://parceljs.org/)
@@ -258,3 +259,11 @@ $RECYCLE.BIN/
 
 # Upload Images
 /public
+
+# Scripts
+install.sh
+uninstall.sh
+upload-server.sh
+
+# Zip
+api.sipena.zip
