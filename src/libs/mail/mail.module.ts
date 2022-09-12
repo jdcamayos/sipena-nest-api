@@ -4,6 +4,7 @@ import { resolve } from 'path';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { MailService } from './mail.service';
 import { Module, Global } from '@nestjs/common';
+import { PrismaModule } from '../prisma/prisma.module';
 
 @Global()
 @Module({
@@ -32,6 +33,7 @@ import { Module, Global } from '@nestjs/common';
       }),
       inject: [ConfigService],
     }),
+    PrismaModule,
   ],
   providers: [MailService],
   exports: [MailService],

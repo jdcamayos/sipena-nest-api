@@ -149,6 +149,7 @@ export class OrdersController {
   @Role(Roles.Admin, Roles.Worker)
   @Get(':orderId/finish')
   finishOrder(@Param('orderId') orderId: string, @Req() req: RequestType) {
+    console.log('User has finished an order', req.user.id);
     return this.ordersService.update(orderId, {
       status: true,
     });

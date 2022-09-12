@@ -60,7 +60,10 @@ export class AuthService {
 
   async register(registerAuthDto: RegisterAuthDto) {
     const user = await this.userService.create(registerAuthDto);
-    await this.mailService.registerMail(user.email);
+    this.mailService
+      .registerMail(user.email)
+      .then((res) => console.log(res))
+      .catch((err) => console.log(err));
     return this.generateToken(user as User);
   }
 
@@ -86,8 +89,13 @@ export class AuthService {
       token,
     );
     // Send Email
-    const reoveryLink = `http://localhost:3000/change-password/${resetPasswordToken}`;
-    await this.mailService.forgotPasswordMail(email, reoveryLink);
+    const recoveryLink = `${this.configService.get<string>(
+      'FRONTEND_URL',
+    )}/recovery-password/${resetPasswordToken}`;
+    this.mailService
+      .forgotPasswordMail(email, recoveryLink)
+      .then((res) => console.log(res))
+      .catch((err) => console.log(err));
 
     if (resetPasswordToken) return true;
     return false;

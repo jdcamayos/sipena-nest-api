@@ -181,22 +181,22 @@ export class UsersService {
   }
 
   async addImageToUser(userId: string, file: Express.Multer.File) {
-    const { image: imageExists } = await this.prisma.user.findUnique({
-      where: {
-        id: userId,
-      },
-    });
-    if (!imageExists) {
-      await fs.promises.unlink(path.resolve(imageExists));
-    }
+    // const { image: imageExists } = await this.prisma.user.findUnique({
+    //   where: {
+    //     id: userId,
+    //   },
+    // });
+    // if (!imageExists) {
+    //   await fs.promises.unlink(path.resolve(imageExists));
+    // }
     const imageBuffer = await fs.promises.readFile(file.path);
     const newName = uuid() + path.extname(file.originalname);
     const imagePath = path.join('public', userId, newName);
     const imageResized = await sharp(imageBuffer)
-      .resize({ width: 300 })
+      .resize({ width: 300, height: 300, fit: 'cover' })
       .toBuffer();
     await fs.promises.writeFile(imagePath, imageResized);
-    await fs.promises.unlink(path.resolve(file.path));
+    // await fs.promises.unlink(path.resolve(file.path));
     const user = await this.prisma.user.update({
       where: {
         id: userId,

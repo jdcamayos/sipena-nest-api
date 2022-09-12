@@ -1,12 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+import { MailService } from 'src/libs/mail/mail.service';
 import { PrismaService } from 'src/libs/prisma/prisma.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 
 @Injectable()
 export class OrdersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private mailService: MailService,
+  ) {}
 
   async getMeta(params: {
     skip?: number;
@@ -26,7 +30,7 @@ export class OrdersService {
   }
 
   async create(createOrderDto: CreateOrderDto) {
-    return await this.prisma.$transaction(async (prisma) => {
+    const order = await this.prisma.$transaction(async (prisma) => {
       const order = await prisma.order.create({
         data: {
           customerId: createOrderDto.customerId,
@@ -53,6 +57,8 @@ export class OrdersService {
           },
         });
     });
+    this.mailService.newOrderMail({ orderId: order.id });
+    return order;
   }
 
   async findAll(params: {
@@ -75,6 +81,7 @@ export class OrdersService {
         include: {
           customer: {
             select: {
+              companyName: true,
               user: {
                 select: {
                   email: true,
@@ -106,14 +113,25 @@ export class OrdersService {
       },
       include: {
         attachments: true,
-        comments: true,
+        comments: {
+          include: {
+            author: {
+              select: {
+                email: true,
+              },
+            },
+          },
+        },
         containers: true,
         workers: {
-          select: {
-            assignedBy: true,
+          orderBy: {
+            user: {
+              email: 'asc',
+            },
+          },
+          include: {
             user: {
               select: {
-                id: true,
                 email: true,
               },
             },
