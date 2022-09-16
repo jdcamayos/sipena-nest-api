@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaModule } from './libs/prisma/prisma.module';
@@ -12,6 +12,8 @@ import { MailService } from './libs/mail/mail.service';
 import { MailModule } from './libs/mail/mail.module';
 import { PublicModule } from './modules/public/public.module';
 import config from './config';
+import { LoggerMiddleware } from './middleware/logger.middleware';
+import { LoggerModule } from 'nestjs-pino';
 
 @Module({
   imports: [
@@ -20,6 +22,16 @@ import config from './config';
       load: [config],
       isGlobal: true,
       expandVariables: true,
+    }),
+    LoggerModule.forRoot({
+      pinoHttp: {
+        transport: {
+          target: 'pino-pretty',
+          options: {
+            singleLine: true,
+          },
+        },
+      },
     }),
     MailModule,
     AuthModule,
@@ -33,4 +45,8 @@ import config from './config';
   controllers: [AppController],
   providers: [AppService, MailService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes('*');
+  }
+}
