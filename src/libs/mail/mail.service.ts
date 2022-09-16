@@ -2,6 +2,7 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { resolve } from 'path';
+import { getUsername } from 'src/utils/username';
 import { PrismaService } from '../prisma/prisma.service';
 import { AddAttachmentDto } from './dto/add-attachment.dto';
 import { AddCommentDto } from './dto/add-comment.dto';
@@ -124,19 +125,6 @@ export class MailService {
     ).customer.user.email;
     const link = `${this.config.get('FRONTEND_URL')}/orders/${orderId}`;
     const to = await this.getEmails(orderId, author);
-    // console.log({
-    //   to,
-    //   subject: `New Order create`,
-    //   context: {
-    //     orderId,
-    //   },
-    //   preview: `
-    //     <h1>New Order created</h1>
-    //     <p>${author} has added new order</p>
-    //     <p>content</p>
-    //     <p>See more -> ${link}</p>
-    //   `,
-    // });
     return await this.mailerService.sendMail({
       to,
       subject: 'New order created',
@@ -160,30 +148,13 @@ export class MailService {
     const { content, orderId, author } = addCommentDto;
     const link = `${this.config.get('FRONTEND_URL')}/orders/${orderId}`;
     const to = await this.getEmails(orderId, author);
-    // console.log({
-    //   to,
-    //   subject: `New comment in Order ${orderId}`,
-    //   // template: './new-comment',
-    //   context: {
-    //     author,
-    //     content,
-    //     orderId,
-    //     orderLink,
-    //   },
-    //   preview: `
-    //     <h1>New Comment</h1>
-    //     <p>${author} has added new comment to order ${orderId}</p>
-    //     <p>${content}</p>
-    //     <p>See more -> ${orderLink}</p>
-    //   `,
-    // });
     return await this.mailerService.sendMail({
       to,
       subject: `New comment added to Order ${orderId}`,
       template: './new-comment',
       context: {
         content,
-        email: author,
+        email: getUsername(author),
         link,
         orderId,
       },
@@ -211,29 +182,12 @@ export class MailService {
     ).email;
     const link = `${this.config.get('FRONTEND_URL')}/orders/${orderId}`;
     const to = await this.getEmails(orderId, author);
-    // console.log({
-    //   to,
-    //   subject: `New attachment in Order ${orderId}`,
-    //   // template: './new-attachment
-    //   context: {
-    //     author,
-    //     filename,
-    //     orderId,
-    //     orderLink,
-    //   },
-    //   preview: `
-    //     <h1>New Comment</h1>
-    //     <p>${author} has added new comment to order ${orderId}</p>
-    //     <p>${filename}</p>
-    //     <p>See more -> ${orderLink}</p>
-    //   `,
-    // });
     return await this.mailerService.sendMail({
       to,
       subject: `New file added to Order ${orderId}`,
       template: './new-attachment',
       context: {
-        email: author,
+        email: getUsername(author),
         filename,
         link,
       },
@@ -261,26 +215,12 @@ export class MailService {
     ).email;
     const to = await this.getEmails(orderId, author);
     const link = `${this.config.get('FRONTEND_URL')}/orders/${orderId}`;
-    // console.log({
-    //   to,
-    //   subject: `Order finished!`,
-    //   // template: './',
-    //   context: {
-    //     orderId,
-    //     orderLink,
-    //   },
-    //   preview: `
-    //     <h1>Title</h1>
-    //     <p>${author} has been finished and closed the order</p>
-    //     <p>See more -> ${orderLink}</p>
-    //   `,
-    // });
     return await this.mailerService.sendMail({
       to,
       subject: `Order ${orderId} completed`,
       template: './order-completed',
       context: {
-        email: author,
+        email: getUsername(author),
         link,
       },
       attachments: [
@@ -316,26 +256,12 @@ export class MailService {
       })
     ).email;
     const link = `${this.config.get('FRONTEND_URL')}/orders/${orderId}`;
-    // console.log({
-    //   to: worker,
-    //   subject: `New Order assigned!`,
-    //   // template: './',
-    //   context: {
-    //     orderId,
-    //     orderLink,
-    //   },
-    //   preview: `
-    //     <h1>Title</h1>
-    //     <p>${author} has been added an Order.</p>
-    //     <p>See more -> ${orderLink}</p>
-    //   `,
-    // });
     return await this.mailerService.sendMail({
       to: worker,
       subject: `New order assigned`,
       template: './order-assigned',
       context: {
-        email: author,
+        email: getUsername(author),
         link,
         orderId,
       },
