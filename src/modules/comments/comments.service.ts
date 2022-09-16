@@ -16,16 +16,27 @@ export class CommentsService {
         author: {
           select: {
             email: true,
+            role: true,
+            image: true,
           },
         },
       },
     });
-    this.mailService.addCommentMail({
+    console.log({
       content: comment.content,
       orderId: comment.orderId,
       author: comment.author.email,
       userId: comment.userId,
     });
+    this.mailService
+      .addCommentMail({
+        content: comment.content,
+        orderId: comment.orderId,
+        author: comment.author.email,
+        userId: comment.userId,
+      })
+      .then((res) => console.log(res))
+      .catch((err) => console.log(err));
     return comment;
   }
 }

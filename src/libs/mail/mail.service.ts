@@ -185,6 +185,7 @@ export class MailService {
         content,
         email: author,
         link,
+        orderId,
       },
       attachments: [
         {

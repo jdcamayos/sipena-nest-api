@@ -118,6 +118,8 @@ export class OrdersService {
             author: {
               select: {
                 email: true,
+                role: true,
+                image: true,
               },
             },
           },

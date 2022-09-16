@@ -7,8 +7,8 @@ const prisma = new PrismaClient();
 
 const SEED_USERS = [
   {
-    email: 'admin@undefined.sh',
-    password: process.env.SEED_PASSWORD,
+    email: process.env.SEED_ADMIN_INIT_EMAIL,
+    password: process.env.SEED_ADMIN_INIT_PASSWORD,
     role: 'admin',
   },
 ];

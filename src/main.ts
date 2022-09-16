@@ -8,7 +8,7 @@ import * as morgan from 'morgan';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    logger: ['log', 'verbose'],
+    logger: false,
   });
   // Database
   const prismaService = app.get(PrismaService);
