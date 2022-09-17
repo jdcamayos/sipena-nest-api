@@ -31,11 +31,6 @@ import { userStorage } from 'src/libs/multer';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  // @Post()
-  // create(@Body() createUserDto: CreateUserDto) {
-  //   return this.usersService.create(createUserDto);
-  // }
-
   @Role(Roles.Admin)
   @Get()
   findAll(@Query() queryParams: QueryParamsDto) {
@@ -54,7 +49,7 @@ export class UsersController {
       where: {
         role: 'worker',
       },
-      take: limit ? limit : 10,
+      take: limit ? limit : 50,
       skip: offset ? offset : 0,
     });
   }
@@ -73,7 +68,7 @@ export class UsersController {
           contains: content,
         },
       },
-      take: limit ? limit : 10,
+      take: limit ? limit : 50,
       skip: offset ? offset : 0,
     });
   }

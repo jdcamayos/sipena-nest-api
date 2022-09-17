@@ -57,7 +57,10 @@ export class OrdersService {
           },
         });
     });
-    this.mailService.newOrderMail({ orderId: order.id });
+    this.mailService
+      .newOrderMail({ orderId: order.id })
+      .then((res) => console.log(res))
+      .catch((err) => console.log(err));
     return order;
   }
 

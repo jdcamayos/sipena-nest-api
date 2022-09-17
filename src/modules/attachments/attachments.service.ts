@@ -14,11 +14,14 @@ export class AttachmentsService {
     const attachment = await this.prisma.attachment.create({
       data: createAttachmentDto,
     });
-    this.mailService.addAttachmentMail({
-      userId: attachment.uploadBy,
-      filename: attachment.originalname,
-      orderId: attachment.orderId,
-    });
+    this.mailService
+      .addAttachmentMail({
+        userId: attachment.uploadBy,
+        filename: attachment.originalname,
+        orderId: attachment.orderId,
+      })
+      .then((res) => console.log(res))
+      .catch((err) => console.log(err));
     return attachment;
   }
 
