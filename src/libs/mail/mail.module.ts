@@ -13,12 +13,20 @@ import { PrismaModule } from '../prisma/prisma.module';
       imports: [ConfigModule],
       useFactory: async (config: ConfigService) => ({
         transport: {
+          service: 'Outlook365',
           host: config.get('EMAIL_HOST'),
+          port: config.get('EMAIL_PORT'),
           secure: true,
           auth: {
             user: config.get('EMAIL_USER'),
             pass: config.get('EMAIL_PASSWORD'),
           },
+          tls: {
+            ciphers: 'SSLv3',
+            rejectUnauthorized: false,
+          },
+          logger: true,
+          debug: true,
         },
         defaults: {
           from: `No-Reply <${config.get('EMAIL_USER')}>`,

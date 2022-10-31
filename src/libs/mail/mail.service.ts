@@ -18,6 +18,14 @@ export class MailService {
     private config: ConfigService,
   ) {}
 
+  async testEmail(email: string) {
+    return await this.mailerService.sendMail({
+      to: email,
+      subject: 'Test email',
+      html: `<h1>Test email</h1>`,
+    });
+  }
+
   async getEmails(orderId: string, author: string) {
     const owner = await this.prisma.order.findUnique({
       where: {
@@ -201,7 +209,7 @@ export class MailService {
     });
   }
 
-  async OrderCompleteMail(orderFinishedDto: OrderFinishedDto) {
+  async finishedOrderMail(orderFinishedDto: OrderFinishedDto) {
     const { orderId, userId } = orderFinishedDto;
     const author = (
       await this.prisma.user.findUnique({

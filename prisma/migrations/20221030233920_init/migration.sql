@@ -8,6 +8,7 @@ CREATE TABLE "User" (
     "resetPasswordToken" TEXT NOT NULL DEFAULT '',
     "blocked" BOOLEAN NOT NULL DEFAULT false,
     "role" TEXT NOT NULL DEFAULT 'customer',
+    "image" TEXT DEFAULT '',
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
@@ -89,6 +90,18 @@ CREATE TABLE "Attachment" (
     CONSTRAINT "Attachment_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "Comment" (
+    "id" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "content" TEXT NOT NULL,
+    "orderId" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+
+    CONSTRAINT "Comment_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
@@ -112,3 +125,9 @@ ALTER TABLE "Container" ADD CONSTRAINT "Container_orderId_fkey" FOREIGN KEY ("or
 
 -- AddForeignKey
 ALTER TABLE "Attachment" ADD CONSTRAINT "Attachment_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "Order"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Comment" ADD CONSTRAINT "Comment_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "Order"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Comment" ADD CONSTRAINT "Comment_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

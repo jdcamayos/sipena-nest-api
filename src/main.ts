@@ -4,7 +4,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { PrismaService } from './libs/prisma/prisma.service';
 import { ConfigService } from '@nestjs/config';
-// import * as morgan from 'morgan';
+import * as morgan from 'morgan';
 import { Logger } from 'nestjs-pino';
 
 async function bootstrap() {
@@ -27,7 +27,7 @@ async function bootstrap() {
     }),
   );
   // Logs
-  // app.use(morgan('dev'));
+  app.use(morgan('dev'));
   // Documentation
   const docBuilder = new DocumentBuilder()
     .setTitle('Sipena Orders API')

@@ -29,6 +29,7 @@ import { AttachmentsService } from '../attachments/attachments.service';
 import { CommentsService } from '../comments/comments.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
+import { MailService } from 'src/libs/mail/mail.service';
 
 @ApiTags('orders')
 @UseGuards(JwtAuthGuard, RoleGuard)
@@ -39,6 +40,7 @@ export class OrdersController {
     private readonly commentsService: CommentsService,
     private readonly ordersService: OrdersService,
     private readonly workersService: WorkersService,
+    private readonly mailService: MailService,
   ) {}
 
   @Role(Roles.Customer)
@@ -149,7 +151,8 @@ export class OrdersController {
   @Role(Roles.Admin, Roles.Worker)
   @Get(':orderId/finish')
   finishOrder(@Param('orderId') orderId: string, @Req() req: RequestType) {
-    console.log('User has finished an order', req.user.id);
+    // console.log('User has finished an order', req.user.id);
+    this.mailService.finishedOrderMail({ orderId, userId: req.user.id });
     return this.ordersService.update(orderId, {
       status: true,
     });
