@@ -44,6 +44,7 @@ async function bootstrap() {
   SwaggerModule.setup('docs', app, document);
   // Configuration
   const config = app.get(ConfigService);
+  app.setGlobalPrefix('/api');
   app.enableCors();
   // Start
   await app.listen(config.get<number>('PORT') || 4000);
